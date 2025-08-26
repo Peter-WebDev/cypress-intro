@@ -1,23 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import { Todo } from "../../generated/prisma";
+import { deleteTodo } from "../actions";
 
 interface Props {
-    defaultTodos: Todo[];
+    todos: Todo[];
 }
 
-export default function TodoList({ defaultTodos }: Props) {
-    const [todos, setTodos] = useState(defaultTodos);
+export default function TodoList({ todos }: Props) {
 
     return (
-        <ul>
+        <ul className="space-y-2">
             {todos.map((t) => (
-                <li key={t.id}>
+                <li key={t.id} className="flex items-center justify-between p-2 border rounded">
                     <p>{t.text}</p>
-                    <button onClick={() => setTodos(todos.filter(({ id }) => id !== t.id))}>
-                        🗑️
-                    </button>
+                    <form action={deleteTodo.bind(null, t.id)}>
+                        <button type="submit">
+                            🗑️
+                        </button>
+                    </form>
                 </li>
             ))}
         </ul>
