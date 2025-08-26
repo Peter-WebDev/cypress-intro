@@ -24,5 +24,7 @@ describe('add todo', () => {
   it('should be possible to add a todo', () => {
     cy.visit('http://localhost:3000');
     cy.get('input.post-title').type('Feed the dog');
+    cy.contains('Post').click();
+    cy.get('p').should('contain', 'My first post');
   });
 });
