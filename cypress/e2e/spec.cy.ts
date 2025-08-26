@@ -6,3 +6,12 @@ describe('todo', () => {
     cy.get('li').last().contains('Walk all the cats');
   });
 });
+
+describe('delete todo', () => {
+  it('should be possible to delete a todo', () => {
+    cy.visit('http://localhost:3000');
+    cy.contains('Feed the cat').parent().find('button').click();
+    cy.get('li').should('have.length', 2);
+    cy.contains('Feed the cat').should('not.exist');
+  });
+});
