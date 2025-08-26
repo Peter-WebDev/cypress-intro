@@ -1,4 +1,5 @@
 import { db } from "@/prisma/db";
+import { Button } from "./ui/button";
 import TodoList from "./ui/todo-list";
 
 export default async function Home() {
@@ -7,6 +8,9 @@ export default async function Home() {
   return (
     <main>
       <TodoList defaultTodos={todos} />
+      <Button variant="primary">
+        Post
+      </Button>
     </main >
   );
 }
