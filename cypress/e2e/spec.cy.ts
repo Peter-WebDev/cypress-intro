@@ -23,8 +23,8 @@ describe('delete todo', () => {
 describe('add todo', () => {
   it('should be possible to add a todo', () => {
     cy.visit('http://localhost:3000');
-    cy.get('input.post-title').type('Feed the dog');
-    cy.contains('Post').click();
-    cy.get('p').should('contain', 'My first post');
+    cy.get('input[type="text"]').type('My first post');
+    cy.get('button').contains('Add todo').click();
+    cy.get('li').should('contain', 'My first post');
   });
 });
