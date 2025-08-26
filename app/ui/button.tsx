@@ -2,12 +2,14 @@ type ButtonProps = {
     children: React.ReactNode;
     className?: string;
     variant?: 'primary' | 'secondary' | 'default';
+    type?: 'button' | 'submit' | 'reset';
 }
 
 export function Button({
     children,
     className,
-    variant = 'default'
+    variant = 'default',
+    type = 'button'
 }: ButtonProps) {
     const baseClasses = "rounded-md px-3 py-2 text-sm font-semibold shadow-sm";
 
@@ -19,6 +21,7 @@ export function Button({
 
     return (
         <button
+            type={type}
             className={[
                 baseClasses,
                 variantClasses[variant],
