@@ -36,8 +36,9 @@ export default defineConfig({
         server.kill();
         await mongo.stop();
       };
-      on('after:run', cleanup); // Normal Cypress-avslut
-      process.on('SIGTERM', cleanup); // Ctrl+C
+      on('after:run', cleanup);
+      process.on('SIGTERM', cleanup);
+      process.on('exit', cleanup);
 
       // 5. Återså/reseed databasen så att testerna blir oberoende av varandra
       process.env.DATABASE_URL = dbUri;
