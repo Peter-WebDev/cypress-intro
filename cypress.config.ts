@@ -7,7 +7,7 @@ import { seedTodos } from './prisma/seed/todo';
 
 export default defineConfig({
   e2e: {
-    async setupNodeEvents(on, config) {
+    async setupNodeEvents(on) {
       // 1. Skapa en in-memory databas (replica set prisma gnäller annars)
       const mongo = await MongoMemoryReplSet.create({
         replSet: { count: 1 },
