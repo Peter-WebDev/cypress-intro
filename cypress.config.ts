@@ -2,7 +2,6 @@ import { spawn } from 'child_process';
 import { defineConfig } from 'cypress';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import waitOn from 'wait-on';
-import { seedTodos } from './prisma/seed/todo';
 
 export default defineConfig({
   e2e: {
@@ -19,7 +18,9 @@ export default defineConfig({
         'npx',
         ['next', 'dev', '--turbopack', '-p', '3100'],
         {
+          shell: true,
           env: {
+            ...process.env,
             NODE_ENV: 'test',
             DATABASE_URL: dbUri,
           },
@@ -35,13 +36,15 @@ export default defineConfig({
         server.kill();
         await mongo.stop();
       };
-      process.on('exit', cleanup);
+      on('after:run', cleanup); // Normal Cypress-avslut
+      process.on('SIGTERM', cleanup); // Ctrl+C
 
       // 5. Återså/reseed databasen så att testerna blir oberoende av varandra
       process.env.DATABASE_URL = dbUri;
       on('task', {
         async reseed() {
           const { db } = await import('./prisma/db');
+          const { seedTodos } = await import('./prisma/seed/todo');
           await db.todo.deleteMany();
           await seedTodos();
 
