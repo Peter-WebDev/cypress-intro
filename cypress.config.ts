@@ -32,12 +32,14 @@ export default defineConfig({
       await waitOn({ resources: ['http://localhost:3100'], timeout: 60_000 });
 
       // 4. Städa upp processerna, det vill säga mongo-databasen och Next.js-servern
-      const cleanup = async () => {
+      const cleanup = () => {
         server.kill();
-        await mongo.stop();
+        mongo.stop();
       };
       on('after:run', cleanup);
+      process.on('SIGINT', cleanup);
       process.on('SIGTERM', cleanup);
+      process.on('SIGBREAK', cleanup);
       process.on('exit', cleanup);
 
       // 5. Återså/reseed databasen så att testerna blir oberoende av varandra
