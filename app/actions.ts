@@ -14,16 +14,43 @@ const gameResultSchema = z.object({
 });
 
 export async function addGameResult(formData: FormData) {
-  // Parse formData using zod zchema
+  // Extract data from form
+  const data = {
+    name: formData.get('name'),
+    time: formData.get('time'),
+    attempts: formData.get('attempts'),
+    categoryId: formData.get('categoryId'),
+  };
+
+  // Use safeParse to validate the data
+  const parsed = gameResultSchema.safeParse(data);
 
   // Check if parsing failed
+  if (!parsed.success) {
+    const errors = z.treeifyError(parsed.error);
+    console.error('Validation error:', errors);
+    return {
+      error: 'Invalid data',
+      issues: errors,
+    };
+  }
 
-  // If sucessful, destructure the valid data
+  // If successful, destructure the valid data
+  const { name, time, attempts, categoryId } = parsed.data;
 
   // Create the database record
+  await db.gameResult.create({
+    data: {
+      name,
+      time,
+      attempts,
+      categoryId,
+    },
+  });
 
   // Update page
   revalidatePath('/');
+  return { success: true };
 }
 
 export async function getTopGameResults() {
