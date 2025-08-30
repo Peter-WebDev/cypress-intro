@@ -1,8 +1,13 @@
 'use server';
-
 import { db } from '@/prisma/db';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+
+import type { Prisma } from '@/generated/prisma';
+
+export type GameResultWithCategory = Prisma.GameResultGetPayload<{
+  include: { category: true };
+}>;
 
 const gameResultSchema = z.object({
   name: z.string().min(3, {
@@ -53,9 +58,17 @@ export async function addGameResult(formData: FormData) {
   return { success: true };
 }
 
-export async function getTopGameResults() {
-  const toplist = await db.gameResult.findMany({
+export async function getTopGameResults(): Promise<GameResultWithCategory[]> {
+  const topResults = await db.gameResult.findMany({
     // Add parameters
+    orderBy: {
+      attempts: 'asc',
+      time: 'asc',
+    },
+    take: 10,
+    include: {
+      category: true,
+    },
   });
-  return toplist;
+  return topResults;
 }
