@@ -47,9 +47,9 @@ export default defineConfig({
       on('task', {
         async reseed() {
           const { db } = await import('./prisma/db');
-          const { seedTodos } = await import('./prisma/seed/todo');
-          await db.todo.deleteMany();
-          await seedTodos();
+          const { seedAssets } = await import('./prisma/seed/asset');
+          await db.asset.deleteMany();
+          await seedAssets();
 
           return null;
         },
