@@ -14,7 +14,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Todo {
-  id   String @id @default(auto()) @map("_id") @db.ObjectId
-  text String
+model GameResult {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  time       Int
+  attempts   Int
+  createdAt  DateTime @default(now())
+  categoryId String   @db.ObjectId
+  category   Category @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id      String       @id @default(auto()) @map("_id") @db.ObjectId
+  name    String       @unique
+  assets  Asset[]
+  results GameResult[]
+}
+
+model Asset {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  imageUrl   String
+  categoryId String   @db.ObjectId
+  category   Category @relation(fields: [categoryId], references: [id])
 }
