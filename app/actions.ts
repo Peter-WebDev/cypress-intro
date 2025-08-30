@@ -13,24 +13,22 @@ const gameResultSchema = z.object({
   categoryId: z.string().min(1),
 });
 
-export async function addTodo(formData: FormData) {
-  const text = formData.get('text') as string;
+export async function addGameResult(formData: FormData) {
+  // Parse formData using zod zchema
 
-  if (!text.trim()) return;
+  // Check if parsing failed
 
-  await db.asset.create({
-    data: { text: text.trim() },
-  });
+  // If sucessful, destructure the valid data
+
+  // Create the database record
 
   // Update page
   revalidatePath('/');
 }
 
-export async function deleteTodo(id: string) {
-  await db.todo.delete({
-    where: { id },
+export async function getTopGameResults() {
+  const toplist = await db.gameResult.findMany({
+    // Add parameters
   });
-
-  // Update page
-  revalidatePath('/');
+  return toplist;
 }
