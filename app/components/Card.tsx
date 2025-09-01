@@ -33,6 +33,7 @@ export default function Card({
                 className={`
           absolute inset-0 backface-hidden rounded-lg
           bg-gray-500 flex justify-center items-center
+          ${isFlipped ? 'opacity-0' : 'opacity-100'}
         `}
             >
                 <div className="text-xl sm:text-2xl text-white font-bold">?</div>
@@ -41,6 +42,7 @@ export default function Card({
                 className={`
           absolute inset-0 backface-hidden rounded-lg
           rotate-y-180 transition-transform duration-500
+          ${isFlipped ? 'opacity-100' : 'opacity-0'}
         `}
             >
                 <Image src={imageUrl} alt="" className="w-full h-full object-cover rounded-lg" width={100} height={100}></Image>
