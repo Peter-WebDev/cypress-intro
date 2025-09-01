@@ -6,6 +6,7 @@ type CardProps = {
     isFlipped: boolean;
     isMatched: boolean;
     onClick: () => void;
+    'data-cy'?: string;
 };
 
 export default function Card({
@@ -13,9 +14,11 @@ export default function Card({
     isFlipped,
     isMatched,
     onClick,
+    'data-cy': dataCy
 }: CardProps) {
     return (
         <div
+            data-cy={dataCy}
             onClick={!isFlipped ? onClick : undefined}
             className={`
         relative w-24 h-24 sm:w-32 sm:h-32 rounded-lg cursor-pointer
@@ -38,7 +41,7 @@ export default function Card({
           rotate-y-180 transition-transform duration-500
         `}
             >
-                <Image src={imageUrl} alt="memory card image" className="w-full h-full object-cover rounded-lg"></Image>
+                <Image src={imageUrl} alt="memory card image" className="w-full h-full object-cover rounded-lg" width={100} height={100}></Image>
             </div>
         </div>
 
