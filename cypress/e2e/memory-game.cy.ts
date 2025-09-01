@@ -12,4 +12,11 @@ describe('memory game - happy path scenarios', () => {
     cy.get('[data-cy="game-board"]').should('be.visible');
     cy.get('[data-cy^="card-"]').should('have.length', 16);
   });
+
+  it('should show all cards face down initially', () => {
+    cy.get('[data-cy^="card-"]').each(($card) => {
+      cy.wrap($card).should('have.attr', 'data-flipped', 'false');
+      cy.wrap($card).should('have.attr', 'data-matched', 'false');
+    });
+  });
 });
