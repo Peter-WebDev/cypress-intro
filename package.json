@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.14.0",
+    "@tanstack/react-query": "^5.85.6",
     "dotenv": "^17.2.1",
     "mongodb-memory-server": "^10.2.0",
     "next": "15.5.0",
@@ -28,6 +29,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@tanstack/eslint-plugin-query": "^5.83.1",
     "@types/node": "^20.19.11",
     "@types/react": "^19",
     "@types/react-dom": "^19",
