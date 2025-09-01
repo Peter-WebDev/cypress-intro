@@ -1,14 +1,15 @@
+'use client';
 import Image from "next/image";
 
 type CardProps = {
-    imageURL: string;
+    imageUrl: string;
     isFlipped: boolean;
     isMatched: boolean;
     onClick: () => void;
 };
 
 export default function Card({
-    imageURL,
+    imageUrl,
     isFlipped,
     isMatched,
     onClick,
@@ -37,7 +38,7 @@ export default function Card({
           rotate-y-180 transition-transform duration-500
         `}
             >
-                <Image src={imageURL} alt="memory card image" className="w-full h-full object-cover rounded-lg"></Image>
+                <Image src={imageUrl} alt="memory card image" className="w-full h-full object-cover rounded-lg"></Image>
             </div>
         </div>
 
