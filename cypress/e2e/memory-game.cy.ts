@@ -31,4 +31,14 @@ describe('memory game - happy path scenarios', () => {
     cy.get('[data-cy="card-1"]').click();
     cy.get('[data-cy="card-1"]').should('have.attr', 'data-flipped', 'true');
   });
+
+  it('should increment attempts counter when two cards are flipped', () => {
+    cy.contains('Attempts: 0').should('be.visible');
+
+    // Klicka på två kort
+    cy.get('[data-cy="card-0"]').click();
+    cy.get('[data-cy="card-1"]').click();
+
+    cy.contains('Attempts: 1').should('be.visible');
+  });
 });

@@ -31,6 +31,7 @@ export default function GameBoard() {
 
     const [cards, setCards] = useState<GameCard[]>([]);
     const [attempts, setAttempts] = useState(0);
+    const [flippedCards, setFlippedCards] = useState<number[]>([]);
 
     useEffect(() => {
         if (assets && assets.length > 0) {
@@ -52,6 +53,15 @@ export default function GameBoard() {
                 c.id === cardId ? { ...c, isFlipped: true } : c
             )
         );
+
+        // Add to flipped cards
+        const newFlippedCards = [...flippedCards, cardId];
+        setFlippedCards(newFlippedCards);
+
+        // If two cards are flipped, increase attempt by 1
+        if (newFlippedCards.length === 2) {
+            setAttempts(prev => prev + 1);
+        };
     };
 
     if (isLoading) return <div>Loading cards...</div>;
