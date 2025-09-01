@@ -1,0 +1,45 @@
+import Image from "next/image";
+
+type CardProps = {
+    imageURL: string;
+    isFlipped: boolean;
+    isMatched: boolean;
+    onClick: () => void;
+};
+
+export default function Card({
+    imageURL,
+    isFlipped,
+    isMatched,
+    onClick,
+}: CardProps) {
+    return (
+        <div
+            onClick={!isFlipped ? onClick : undefined}
+            className={`
+        relative w-24 h-24 sm:w-32 sm:h-32 rounded-lg cursor-pointer
+        transition-transform duration-500 transform-style-3d
+        ${isFlipped ? 'rotate-y-180' : ''}
+        ${isMatched ? 'opacity-50' : ''}
+      `}
+        >
+            <div
+                className={`
+          absolute inset-0 backface-hidden rounded-lg
+          bg-gray-500 flex justify-center items-center
+        `}
+            >
+                <div className="text-xl sm:text-2xl text-white font-bold">?</div>
+            </div>
+            <div
+                className={`
+          absolute inset-0 backface-hidden rounded-lg
+          rotate-y-180 transition-transform duration-500
+        `}
+            >
+                <Image src={imageURL} alt="memory card image" className="w-full h-full object-cover rounded-lg"></Image>
+            </div>
+        </div>
+
+    );
+}
