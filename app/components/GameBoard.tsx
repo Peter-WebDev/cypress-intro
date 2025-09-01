@@ -45,6 +45,15 @@ export default function GameBoard() {
         }
     }, [assets]);
 
+    const handleCardClick = (cardId: number) => {
+        // Flip the card
+        setCards(prevCards =>
+            prevCards.map(c =>
+                c.id === cardId ? { ...c, isFlipped: true } : c
+            )
+        );
+    };
+
     if (isLoading) return <div>Loading cards...</div>;
     if (isError) return <div>Error loading game assets.</div>;
     if (!assets || assets.length === 0) return <div>No assets available.</div>;
@@ -60,7 +69,7 @@ export default function GameBoard() {
                         imageUrl={card.imageUrl}
                         isFlipped={card.isFlipped}
                         isMatched={card.isMatched}
-                        onClick={() => { }} // Emty for now
+                        onClick={() => handleCardClick(card.id)} // Connect click-event
                     />
                 ))}
             </div>

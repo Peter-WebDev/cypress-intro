@@ -19,4 +19,9 @@ describe('memory game - happy path scenarios', () => {
       cy.wrap($card).should('have.attr', 'data-matched', 'false');
     });
   });
+
+  it('should flip a card when clicked', () => {
+    cy.get('[data-cy="card-0"]').click();
+    cy.get('[data-cy="card-0"]').should('have.attr', 'data-flipped', 'true');
+  });
 });
