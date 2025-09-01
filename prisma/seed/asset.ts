@@ -1,5 +1,5 @@
 import { Asset, Category } from '@/generated/prisma';
-import { db } from '../db';
+import { db } from '@/lib/db';
 
 const categoryName = 'Animals';
 
