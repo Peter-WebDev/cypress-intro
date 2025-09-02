@@ -6,6 +6,9 @@ import waitOn from 'wait-on';
 export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:3100',
+    env: {
+      DISABLE_SHUFFLE: true,
+    },
     async setupNodeEvents(on) {
       // 1. Skapa en in-memory databas (replica set prisma gnäller annars)
       const mongo = await MongoMemoryReplSet.create({
