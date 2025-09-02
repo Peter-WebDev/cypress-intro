@@ -122,9 +122,9 @@ export default function GameBoard() {
         });
     };
 
-    if (isLoading) return <div>Loading cards...</div>;
-    if (isError) return <div>Error loading game assets.</div>;
-    if (!assets || assets.length === 0) return <div>No assets available.</div>;
+    if (isLoading) return <h2 className='text-3xl text-center mt-4'>Loading cards...</h2>;
+    if (isError) return <h2 className='text-3xl text-center mt-4'>Error loading game assets.</h2>;
+    if (!assets || assets.length === 0) return <h2 className='text-3xl text-center mt-4'>No assets available.</h2>;
 
     return (
         <div className="flex flex-col items-center">
