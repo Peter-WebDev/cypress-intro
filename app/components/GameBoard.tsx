@@ -11,8 +11,22 @@ interface GameCard {
 }
 
 const shuffleArray = (array: Asset[]): Asset[] => {
-    return array.sort(() => Math.random() - 0.5);
+    // Disable shuffling in test environment
+    if (typeof window !== 'undefined' &&
+        (window as any).Cypress &&
+        (window as any).Cypress.env('DISABLE_SHUFFLE')) {
+        return [...array];
+    }
+
+    // Fisher-Yates shuffle algorithm (better than sort + random)
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
 };
+
 
 // Function to fetch assets from API
 const getAssets = async (): Promise<Asset[]> => {
@@ -47,44 +61,65 @@ export default function GameBoard() {
     }, [assets]);
 
     const handleCardClick = (cardId: number) => {
-        // Flip the card
-        setCards(prevCards =>
-            prevCards.map(c =>
-                c.id === cardId ? { ...c, isFlipped: true } : c
-            )
-        );
+        // Don't allow clicking if card is already flipped or matched
+        const card = cards.find(c => c.id === cardId);
+        if (!card || card.isFlipped || card.isMatched) return;
 
-        // Add to flipped cards
-        const newFlippedCards = [...flippedCards, cardId];
-        setFlippedCards(newFlippedCards);
+        // Don't allow more than 2 cards to be flipped at once
+        if (flippedCards.length >= 2) return;
 
-        // If two cards are flipped, increase attempt by 1
-        if (newFlippedCards.length === 2) {
+        if (flippedCards.length === 1) {
             setAttempts(prev => prev + 1);
+        }
 
-            // Check if cards match
-            const [firstCardId, secondCardId] = newFlippedCards;
-            const firstCard = cards.find(c => c.id === firstCardId);
-            const secondCard = cards.find(c => c.id === secondCardId);
+        setTimeout(() => {
+            // Flip the card
+            setCards(prevCards =>
+                prevCards.map(c =>
+                    c.id === cardId ? { ...c, isFlipped: true } : c
+                )
+            );
 
-            if (firstCard && secondCard && firstCard.imageUrl === secondCard.imageUrl) {
-                // Match found - mark cards as matched
-                setTimeout(() => {
-                    setCards(prevCards =>
-                        prevCards.map(c =>
-                            c.id === firstCardId || c.id === secondCardId
-                                ? { ...c, isMatched: true }
-                                : c
-                        )
-                    );
-                    setFlippedCards([]);
-                }, 1000);
+            // Add to flipped cards
+            const newFlippedCards = [...flippedCards, cardId];
+            setFlippedCards(newFlippedCards);
 
-            } else {
-                // No match - flip back cards
-            }
+            // If two cards are flipped
+            if (newFlippedCards.length === 2) {
 
-        };
+                // Check if cards match
+                const [firstCardId, secondCardId] = newFlippedCards;
+                const firstCard = cards.find(c => c.id === firstCardId);
+                const secondCard = cards.find(c => c.id === secondCardId);
+
+                if (firstCard && secondCard && firstCard.imageUrl === secondCard.imageUrl) {
+                    // Match found - mark cards as matched
+                    setTimeout(() => {
+                        setCards(prevCards =>
+                            prevCards.map(c =>
+                                c.id === firstCardId || c.id === secondCardId
+                                    ? { ...c, isMatched: true }
+                                    : c
+                            )
+                        );
+                        setFlippedCards([]);
+                    });
+
+                } else {
+                    // No match - flip back cards
+                    setTimeout(() => {
+                        setCards(prevCards =>
+                            prevCards.map(c =>
+                                c.id === firstCardId || c.id === secondCardId
+                                    ? { ...c, isFlipped: false }
+                                    : c
+                            )
+                        );
+                        setFlippedCards([]);
+                    }, 1500);
+                }
+            };
+        });
     };
 
     if (isLoading) return <div>Loading cards...</div>;
@@ -107,7 +142,7 @@ export default function GameBoard() {
                 ))}
             </div>
             <div className="mt-4 text-lg font-medium text-gray-700">
-                Attempts: {attempts}
+                Attempts: <span data-cy="attempts" className="ml-2">{attempts}</span>
             </div>
         </div>
     );
