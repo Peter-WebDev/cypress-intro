@@ -45,7 +45,7 @@ export default function Card({
           ${isFlipped ? 'backface-visible' : 'backface-hidden'}
         `}
             >
-                <Image src={imageUrl} alt="" className="w-full h-full object-cover rounded-lg" width={100} height={100}></Image>
+                {isFlipped && <Image src={imageUrl} alt="" className="w-full h-full object-cover rounded-lg" width={100} height={100}></Image>}
             </div>
         </div>
 
