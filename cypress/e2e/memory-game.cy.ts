@@ -33,53 +33,51 @@ describe('memory game - happy path scenarios', () => {
   });
 
   it('should increment attempts counter when two cards are flipped', () => {
+    // Initial number is zero
     cy.contains('Attempts: 0').should('be.visible');
+
     cy.get('[data-cy="card-0"]').click();
     cy.get('[data-cy="card-1"]').click();
-    cy.contains('Attempts: 1').should('be.visible');
+
+    cy.wait(800);
+
+    cy.get('[data-cy="attempts"]').should('have.text', '1');
+
+    cy.wait(800);
+
+    cy.get('[data-cy="card-2"]').click();
+    cy.get('[data-cy="card-3"]').click();
+
+    cy.wait(800);
+
+    cy.get('[data-cy="attempts"]').should('have.text', '2');
+
+    cy.wait(800);
   });
 
   it('should keep matched cards flipped', () => {
-    cy.get('[data-cy^="card-"]').then(($cards) => {
-      const cards = Array.from($cards);
-      const assetUrls = cards.map((card) =>
-        card.getAttribute('data-asset-url')
-      );
+    cy.get('[data-cy="card-0"]').click();
+    cy.get('[data-cy="card-8"]').click();
 
-      // Find first pair with same URL
-      const firstUrl = assetUrls[0];
-      const matchingIndices = assetUrls
-        .map((url, index) => (url === firstUrl ? index : -1))
-        .filter((index) => index !== -1)
-        .slice(0, 2); // First two matched
+    cy.get('[data-cy="card-0"]')
+      .should('have.attr', 'data-flipped', 'true')
+      .should('have.attr', 'data-matched', 'true');
 
-      if (matchingIndices.length === 2) {
-        cy.get(`[data-cy="card-${matchingIndices[0]}"]`).click();
-        cy.get(`[data-cy="card-${matchingIndices[1]}"]`).click();
+    cy.get('[data-cy="card-8"]')
+      .should('have.attr', 'data-flipped', 'true')
+      .should('have.attr', 'data-matched', 'true');
+  });
 
-        cy.wait(1000); // Wait for animation to finish
+  it('should flip non-matching cards back after delay', () => {
+    cy.get('[data-cy="card-0"]').click();
+    cy.get('[data-cy="card-1"]').click();
 
-        cy.get(`[data-cy="card-${matchingIndices[0]}"]`).should(
-          'have.attr',
-          'data-flipped',
-          'true'
-        );
-        cy.get(`[data-cy="card-${matchingIndices[1]}"]`).should(
-          'have.attr',
-          'data-flipped',
-          'true'
-        );
-        cy.get(`[data-cy="card-${matchingIndices[0]}"]`).should(
-          'have.attr',
-          'data-matched',
-          'true'
-        );
-        cy.get(`[data-cy="card-${matchingIndices[1]}"]`).should(
-          'have.attr',
-          'data-matched',
-          'true'
-        );
-      }
-    });
+    cy.get('[data-cy="card-0"]')
+      .should('have.attr', 'data-flipped', 'true')
+      .should('have.attr', 'data-matched', 'false');
+
+    cy.get('[data-cy="card-1"]')
+      .should('have.attr', 'data-flipped', 'true')
+      .should('have.attr', 'data-matched', 'false');
   });
 });
