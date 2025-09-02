@@ -61,6 +61,29 @@ export default function GameBoard() {
         // If two cards are flipped, increase attempt by 1
         if (newFlippedCards.length === 2) {
             setAttempts(prev => prev + 1);
+
+            // Check if cards match
+            const [firstCardId, secondCardId] = newFlippedCards;
+            const firstCard = cards.find(c => c.id === firstCardId);
+            const secondCard = cards.find(c => c.id === secondCardId);
+
+            if (firstCard && secondCard && firstCard.imageUrl === secondCard.imageUrl) {
+                // Match found - mark cards as matched
+                setTimeout(() => {
+                    setCards(prevCards =>
+                        prevCards.map(c =>
+                            c.id === firstCardId || c.id === secondCardId
+                                ? { ...c, isMatched: true }
+                                : c
+                        )
+                    );
+                    setFlippedCards([]);
+                }, 1000);
+
+            } else {
+                // No match - flip back cards
+            }
+
         };
     };
 
