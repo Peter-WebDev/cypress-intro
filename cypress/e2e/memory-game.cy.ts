@@ -2,6 +2,11 @@ describe('memory game - happy path scenarios', () => {
   beforeEach(() => {
     cy.visit('/');
     cy.task('reseed');
+    cy.wait(1000);
+  });
+
+  afterEach(() => {
+    cy.wait(1500);
   });
 
   it('should display the game title', () => {
@@ -37,22 +42,22 @@ describe('memory game - happy path scenarios', () => {
     cy.contains('Attempts: 0').should('be.visible');
 
     cy.get('[data-cy="card-0"]').click();
-    cy.get('[data-cy="card-1"]').click();
+    cy.get('[data-cy="card-5"]').click();
 
-    cy.wait(800);
+    cy.wait(1000);
 
     cy.get('[data-cy="attempts"]').should('have.text', '1');
 
-    cy.wait(800);
+    cy.wait(1000);
 
     cy.get('[data-cy="card-2"]').click();
-    cy.get('[data-cy="card-3"]').click();
+    cy.get('[data-cy="card-12"]').click();
 
-    cy.wait(800);
+    cy.wait(1000);
 
     cy.get('[data-cy="attempts"]').should('have.text', '2');
 
-    cy.wait(800);
+    cy.wait(1000);
   });
 
   it('should keep matched cards flipped', () => {
@@ -77,6 +82,19 @@ describe('memory game - happy path scenarios', () => {
       .should('have.attr', 'data-matched', 'false');
 
     cy.get('[data-cy="card-1"]')
+      .should('have.attr', 'data-flipped', 'true')
+      .should('have.attr', 'data-matched', 'false');
+
+    cy.wait(2000);
+
+    cy.get('[data-cy="card-4"]').click();
+    cy.get('[data-cy="card-5"]').click();
+
+    cy.get('[data-cy="card-4"]')
+      .should('have.attr', 'data-flipped', 'true')
+      .should('have.attr', 'data-matched', 'false');
+
+    cy.get('[data-cy="card-5"]')
       .should('have.attr', 'data-flipped', 'true')
       .should('have.attr', 'data-matched', 'false');
   });
