@@ -3,13 +3,15 @@ type ButtonProps = {
     className?: string;
     variant?: 'primary' | 'secondary' | 'default';
     type?: 'button' | 'submit' | 'reset';
+    onClick?: () => void;
 }
 
 export function Button({
     children,
     className,
     variant = 'default',
-    type = 'button'
+    type = 'button',
+    onClick,
 }: ButtonProps) {
     const baseClasses = "rounded-md px-3 py-2 text-sm font-semibold shadow-sm";
 
@@ -25,7 +27,8 @@ export function Button({
             className={[
                 baseClasses,
                 variantClasses[variant],
-                className
+                className,
+                onClick ? 'cursor-pointer' : 'cursor-not-allowed',
             ].filter(Boolean).join(' ')}
         >
             {children}
