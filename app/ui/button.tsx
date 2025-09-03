@@ -4,6 +4,7 @@ type ButtonProps = {
     variant?: 'primary' | 'secondary' | 'default';
     type?: 'button' | 'submit' | 'reset';
     onClick?: () => void;
+    'dataCy'?: string;
 }
 
 export function Button({
@@ -12,6 +13,7 @@ export function Button({
     variant = 'default',
     type = 'button',
     onClick,
+    dataCy,
 }: ButtonProps) {
     const baseClasses = "rounded-md px-3 py-2 text-sm font-semibold shadow-sm";
 
@@ -22,16 +24,20 @@ export function Button({
     };
 
     return (
-        <button
-            type={type}
-            className={[
-                baseClasses,
-                variantClasses[variant],
-                className,
-                onClick ? 'cursor-pointer' : 'cursor-not-allowed',
-            ].filter(Boolean).join(' ')}
-        >
-            {children}
-        </button>
+        <>
+            <button
+                data-cy={dataCy}
+                onClick={onClick}
+                type={type}
+                className={[
+                    baseClasses,
+                    variantClasses[variant],
+                    className,
+                    onClick ? 'cursor-not-allowed' : 'cursor-pointer',
+                ].filter(Boolean).join(' ')}
+            >
+                {children}
+            </button>
+        </>
     );
 }
