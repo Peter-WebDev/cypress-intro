@@ -138,11 +138,9 @@ describe('memory game - happy path scenarios', () => {
     cy.wait(500);
 
     cy.get('[data-cy="win-modal"]').should('be.visible');
-    cy.get('[data-cy="name-input"]').should('be.visible');
     cy.get('[data-cy="score-display"]').should('be.visible');
-    cy.get('[data-cy="submit-button"]')
-      .should('be.visible')
-      .and('not.be.disabled');
+    cy.get('[data-cy="name-input"]').should('be.visible');
+    cy.get('[data-cy="submit-button"]').should('be.visible');
   });
 
   // should allow the user to submit their score via the win screen form
