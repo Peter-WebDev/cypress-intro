@@ -124,7 +124,7 @@ export default function GameBoard() {
     if (!assets || assets.length === 0) return <h2 className='text-3xl text-center mt-4'>No assets available.</h2>;
 
     return (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center lg:col-span-2">
             <div data-cy="game-board" className="grid grid-cols-4 gap-4">
                 {cards.map((card, index) => (
                     <Card
