@@ -98,4 +98,54 @@ describe('memory game - happy path scenarios', () => {
       .should('have.attr', 'data-flipped', 'true')
       .should('have.attr', 'data-matched', 'false');
   });
+
+  // should not be possible to click on already flipped cards
+
+  // should not be possible to click on already matched cards
+
+  it.only('should show the win screen when all pairs are matched', () => {
+    cy.get('[data-cy="card-0"]').click();
+    cy.wait(250);
+    cy.get('[data-cy="card-8"]').click();
+    cy.wait(500);
+    cy.get('[data-cy="card-1"]').click();
+    cy.wait(250);
+    cy.get('[data-cy="card-9"]').click();
+    cy.wait(500);
+    cy.get('[data-cy="card-2"]').click();
+    cy.wait(250);
+    cy.get('[data-cy="card-10"]').click();
+    cy.wait(500);
+    cy.get('[data-cy="card-3"]').click();
+    cy.wait(250);
+    cy.get('[data-cy="card-11"]').click();
+    cy.wait(500);
+    cy.get('[data-cy="card-4"]').click();
+    cy.wait(250);
+    cy.get('[data-cy="card-12"]').click();
+    cy.wait(500);
+    cy.get('[data-cy="card-5"]').click();
+    cy.wait(250);
+    cy.get('[data-cy="card-13"]').click();
+    cy.wait(500);
+    cy.get('[data-cy="card-6"]').click();
+    cy.wait(250);
+    cy.get('[data-cy="card-14"]').click();
+    cy.wait(500);
+    cy.get('[data-cy="card-7"]').click();
+    cy.wait(250);
+    cy.get('[data-cy="card-15"]').click();
+    cy.wait(500);
+
+    cy.get('[data-cy="win-modal"]').should('be.visible');
+    cy.get('[data-cy="name-input"]').should('be.visible');
+    cy.get('[data-cy="score-display"]').should('be.visible');
+    cy.get('[data-cy="submit-button"]')
+      .should('be.visible')
+      .and('not.be.disabled');
+  });
+
+  // should allow the user to submit their score via the win screen form
+
+  // should display the game result in leaderboard
 });
