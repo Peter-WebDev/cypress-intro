@@ -1,4 +1,4 @@
-describe('memory game - happy path scenarios', () => {
+describe('memory game - unhappy path scenarios', () => {
   // Denna hook körs EN gång, innan alla tester
   before(() => {
     // Definiera din förutsägbara sekvens
@@ -18,68 +18,7 @@ describe('memory game - happy path scenarios', () => {
     cy.visit('/');
   });
 
-  it('should display the game title', () => {
-    cy.contains('Memory Game').should('be.visible');
-  });
-
-  it('should display the game board with 16 cards', () => {
-    cy.get('[data-cy="game-board"]').should('be.visible');
-    cy.get('[data-cy^="card-"]').should('have.length', 16);
-  });
-
-  it('should show all cards face down initially', () => {
-    cy.get('[data-cy^="card-"]').each(($card) => {
-      cy.wrap($card).should('have.attr', 'data-flipped', 'false');
-    });
-  });
-
-  it('should flip a card when clicked', () => {
-    cy.get('[data-cy="card-0"]').click();
-    cy.get('[data-cy="card-0"]').should('have.attr', 'data-flipped', 'true');
-  });
-
-  it('should flip two cards when clicked in sequence', () => {
-    cy.get('[data-cy="card-0"]').click();
-    cy.get('[data-cy="card-0"]').should('have.attr', 'data-flipped', 'true');
-    cy.get('[data-cy="card-1"]').click();
-    cy.get('[data-cy="card-1"]').should('have.attr', 'data-flipped', 'true');
-  });
-
-  it('should increment attempts counter when two cards are flipped', () => {
-    // Initial number is zero
-    cy.contains('Attempts: 0').should('be.visible');
-
-    cy.get('[data-cy="card-0"]').click();
-    cy.get('[data-cy="card-5"]').click();
-
-    cy.wait(1000);
-
-    cy.get('[data-cy="attempts"]').should('have.text', '1');
-
-    cy.wait(1000);
-
-    cy.get('[data-cy="card-2"]').click();
-    cy.get('[data-cy="card-12"]').click();
-
-    cy.wait(1000);
-
-    cy.get('[data-cy="attempts"]').should('have.text', '2');
-  });
-
-  it('should keep matched cards flipped', () => {
-    cy.get('[data-cy="card-0"]').click();
-    cy.get('[data-cy="card-2"]').click();
-
-    cy.wait(1000);
-
-    cy.get('[data-cy="card-0"]')
-      .should('have.attr', 'data-flipped', 'true')
-      .should('have.attr', 'data-matched', 'true');
-
-    cy.get('[data-cy="card-2"]')
-      .should('have.attr', 'data-flipped', 'true')
-      .should('have.attr', 'data-matched', 'true');
-  });
+  // should not allow flipping more than two cards
 
   it('should flip non-matching cards back after delay', () => {
     cy.get('[data-cy="card-0"]').click();
@@ -107,9 +46,9 @@ describe('memory game - happy path scenarios', () => {
       .should('have.attr', 'data-matched', 'false');
   });
 
-  // should not be possible to click on already flipped cards
+  // should not allow submitting a score with an empty name
 
-  // should not be possible to click on already matched cards
+  // should show an error message for an invalid name input
 
   it('should show the win screen when all pairs are matched', () => {
     cy.get('[data-cy="card-0"]').click();
@@ -134,8 +73,4 @@ describe('memory game - happy path scenarios', () => {
     cy.get('[data-cy="name-input"]').should('be.visible');
     cy.get('[data-cy="submit-button"]').should('be.visible');
   });
-
-  // should allow the user to submit their score via the win screen form
-
-  // should display the game result in leaderboard
 });
