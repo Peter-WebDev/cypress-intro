@@ -1,12 +1,21 @@
 describe('memory game - happy path scenarios', () => {
-  beforeEach(() => {
-    cy.visit('/');
-    cy.task('reseed');
-    cy.wait(1000);
+  // Denna hook körs EN gång, innan alla tester
+  before(() => {
+    // Definiera din förutsägbara sekvens
+    const predictableSequence = [
+      // 6 värden för första shuffle
+      0.8, 0.2, 0.5, 0.9, 0.1, 0.99,
+      // 22 värden för den andra shuffle
+      0.3, 0.4, 0.95, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.12, 0.23, 0.34,
+      0.46, 0.57, 0.68, 0.71, 0.82, 0.93, 0.14, 0.25, 0.36,
+    ];
+    // Stuba Math.random() en gång för alla tester i sviten
+    cy.shuffle(predictableSequence);
   });
 
-  afterEach(() => {
-    cy.wait(1500);
+  beforeEach(() => {
+    cy.task('reseed');
+    cy.visit('/');
   });
 
   it('should display the game title', () => {
@@ -21,7 +30,6 @@ describe('memory game - happy path scenarios', () => {
   it('should show all cards face down initially', () => {
     cy.get('[data-cy^="card-"]').each(($card) => {
       cy.wrap($card).should('have.attr', 'data-flipped', 'false');
-      cy.wait(500);
     });
   });
 
@@ -56,19 +64,19 @@ describe('memory game - happy path scenarios', () => {
     cy.wait(1000);
 
     cy.get('[data-cy="attempts"]').should('have.text', '2');
-
-    cy.wait(1000);
   });
 
   it('should keep matched cards flipped', () => {
     cy.get('[data-cy="card-0"]').click();
-    cy.get('[data-cy="card-8"]').click();
+    cy.get('[data-cy="card-2"]').click();
+
+    cy.wait(1000);
 
     cy.get('[data-cy="card-0"]')
       .should('have.attr', 'data-flipped', 'true')
       .should('have.attr', 'data-matched', 'true');
 
-    cy.get('[data-cy="card-8"]')
+    cy.get('[data-cy="card-2"]')
       .should('have.attr', 'data-flipped', 'true')
       .should('have.attr', 'data-matched', 'true');
   });
@@ -103,39 +111,23 @@ describe('memory game - happy path scenarios', () => {
 
   // should not be possible to click on already matched cards
 
-  it.only('should show the win screen when all pairs are matched', () => {
+  it('should show the win screen when all pairs are matched', () => {
     cy.get('[data-cy="card-0"]').click();
-    cy.wait(250);
-    cy.get('[data-cy="card-8"]').click();
-    cy.wait(500);
-    cy.get('[data-cy="card-1"]').click();
-    cy.wait(250);
-    cy.get('[data-cy="card-9"]').click();
-    cy.wait(500);
     cy.get('[data-cy="card-2"]').click();
-    cy.wait(250);
-    cy.get('[data-cy="card-10"]').click();
-    cy.wait(500);
-    cy.get('[data-cy="card-3"]').click();
-    cy.wait(250);
+    cy.get('[data-cy="card-1"]').click();
     cy.get('[data-cy="card-11"]').click();
-    cy.wait(500);
+    cy.get('[data-cy="card-3"]').click();
+    cy.get('[data-cy="card-10"]').click();
     cy.get('[data-cy="card-4"]').click();
-    cy.wait(250);
-    cy.get('[data-cy="card-12"]').click();
-    cy.wait(500);
-    cy.get('[data-cy="card-5"]').click();
-    cy.wait(250);
-    cy.get('[data-cy="card-13"]').click();
-    cy.wait(500);
-    cy.get('[data-cy="card-6"]').click();
-    cy.wait(250);
-    cy.get('[data-cy="card-14"]').click();
-    cy.wait(500);
-    cy.get('[data-cy="card-7"]').click();
-    cy.wait(250);
     cy.get('[data-cy="card-15"]').click();
-    cy.wait(500);
+    cy.get('[data-cy="card-5"]').click();
+    cy.get('[data-cy="card-6"]').click();
+    cy.get('[data-cy="card-7"]').click();
+    cy.get('[data-cy="card-8"]').click();
+    cy.get('[data-cy="card-9"]').click();
+    cy.get('[data-cy="card-12"]').click();
+    cy.get('[data-cy="card-13"]').click();
+    cy.get('[data-cy="card-14"]').click();
 
     cy.get('[data-cy="win-modal"]').should('be.visible');
     cy.get('[data-cy="score-display"]').should('be.visible');

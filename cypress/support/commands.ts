@@ -35,3 +35,15 @@
 //     }
 //   }
 // }
+
+Cypress.Commands.add('shuffle', (predictableSequence: number[]) => {
+  Cypress.on('window:before:load', (win) => {
+    let callIndex = 0;
+
+    cy.stub(win.Math, 'random').callsFake(() => {
+      const value = predictableSequence[callIndex % predictableSequence.length];
+      callIndex++;
+      return value;
+    });
+  });
+});
