@@ -102,22 +102,7 @@ describe('memory game - happy path scenarios', () => {
   });
 
   it('should show the win screen when all pairs are matched', () => {
-    cy.get('[data-cy="card-0"]').click();
-    cy.get('[data-cy="card-2"]').click();
-    cy.get('[data-cy="card-1"]').click();
-    cy.get('[data-cy="card-11"]').click();
-    cy.get('[data-cy="card-3"]').click();
-    cy.get('[data-cy="card-10"]').click();
-    cy.get('[data-cy="card-4"]').click();
-    cy.get('[data-cy="card-15"]').click();
-    cy.get('[data-cy="card-5"]').click();
-    cy.get('[data-cy="card-6"]').click();
-    cy.get('[data-cy="card-7"]').click();
-    cy.get('[data-cy="card-8"]').click();
-    cy.get('[data-cy="card-9"]').click();
-    cy.get('[data-cy="card-12"]').click();
-    cy.get('[data-cy="card-13"]').click();
-    cy.get('[data-cy="card-14"]').click();
+    cy.solveGame();
 
     cy.get('[data-cy="win-modal"]').should('be.visible');
     cy.get('[data-cy="score-display"]').should('be.visible');
@@ -125,6 +110,30 @@ describe('memory game - happy path scenarios', () => {
     cy.get('[data-cy="submit-button"]').should('be.visible');
   });
 
-  // should display the game result in leaderboard
-  it('should display the game result in leaderboard', () => {});
+  it.only('should fill in form and display the game result in leaderboard', () => {
+    cy.solveGame();
+    cy.get('[data-cy="attempts-final"]').invoke('text').as('finalAttempts');
+    cy.get('[data-cy="time-final"]').invoke('text').as('finalTime');
+
+    const playerName = 'Jane Doe';
+    cy.get('[data-cy="player-name-input"]').type(playerName);
+    cy.get('[data-cy="submit-button"]').click();
+
+    cy.wait(3000);
+
+    // Leaderboard
+    cy.get('[data-cy="leaderboard-item"]')
+      .contains('[data-cy="leaderboard-name"]', playerName)
+      .within(() => {
+        cy.get('@finalAttempts').then((attempts) => {
+          cy.get('[data-cy="leaderboard-attempts"]').should(
+            'have.text',
+            attempts
+          );
+        });
+        cy.get('@finalTime').then((time) => {
+          cy.get('[data-cy="leaderboard-time"]').should('have.text', time);
+        });
+      });
+  });
 });

@@ -6,4 +6,7 @@ declare namespace Cypress {
      */
     shuffle(predictableSequence: number[]): Chainable<void>;
   }
+  interface Chainable {
+    solveGame(): Chainable<void>;
+  }
 }

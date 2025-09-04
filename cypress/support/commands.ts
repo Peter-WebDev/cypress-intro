@@ -47,3 +47,23 @@ Cypress.Commands.add('shuffle', (predictableSequence: number[]) => {
     });
   });
 });
+
+Cypress.Commands.add('solveGame', () => {
+  // Definiera de matchande paren i kommandot
+  const pairs = {
+    'card-0': 'card-2',
+    'card-1': 'card-11',
+    'card-3': 'card-10',
+    'card-4': 'card-15',
+    'card-5': 'card-6',
+    'card-7': 'card-8',
+    'card-9': 'card-12',
+    'card-13': 'card-14',
+  };
+
+  // Iterera över objekten och klicka på varje par
+  for (const [firstCard, secondCard] of Object.entries(pairs)) {
+    cy.get(`[data-cy="${firstCard}"]`).click();
+    cy.get(`[data-cy="${secondCard}"]`).click();
+  }
+});
