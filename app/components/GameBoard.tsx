@@ -1,7 +1,7 @@
 'use client';
 import type { Asset } from '@/generated/prisma';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Card from './Card';
 import GameResultModal from './GameResultModal';
 interface GameCard {
@@ -12,13 +12,6 @@ interface GameCard {
 }
 
 const shuffleArray = (array: Asset[]): Asset[] => {
-    // Disable shuffling in test environment
-    if (typeof window !== 'undefined' &&
-        (window as any).Cypress &&
-        (window as any).Cypress.env('DISABLE_SHUFFLE')) {
-        return [...array];
-    }
-
     // Fisher-Yates shuffle algorithm (better than sort + random)
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -38,6 +31,16 @@ const getAssets = async (): Promise<Asset[]> => {
     return response.json();
 };
 
+const formatTime = (totalSeconds: number): string => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
+
+    return `${formattedMinutes}:${formattedSeconds}`;
+};
+
 export default function GameBoard() {
     const { data: assets, isLoading, isError } = useQuery({
         queryKey: ['gameAssets'],
@@ -47,8 +50,11 @@ export default function GameBoard() {
     const [cards, setCards] = useState<GameCard[]>([]);
     const [attempts, setAttempts] = useState(0);
     const [flippedCards, setFlippedCards] = useState<number[]>([]);
-    const [gameIsFinished, setGameIsFinished] = useState(false);
+    const [isGameFinished, setIsGameFinished] = useState(false);
 
+    const [time, setTime] = useState(0);
+    const [isTimerRunning, setIsTimerRunning] = useState(false);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         if (assets && assets.length > 0) {
@@ -63,10 +69,35 @@ export default function GameBoard() {
         }
     }, [assets]);
 
+    // Effect ti manage timer
+    useEffect(() => {
+        if (isTimerRunning) {
+            timerRef.current = setInterval(() => {
+                setTime(prevTime => prevTime + 1);
+            }, 1000);
+        }
+
+        if (isGameFinished && timerRef.current) {
+            clearInterval(timerRef.current);
+            setIsTimerRunning(false);
+        }
+
+        return () => {
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+            }
+        };
+    }, [isTimerRunning, isGameFinished]);
+
     const handleCardClick = (cardId: number) => {
         // Don't allow clicking if card is already flipped or matched
         const card = cards.find(c => c.id === cardId);
         if (!card || card.isFlipped || card.isMatched) return;
+
+        // Start the timer when the first card is flipped
+        if (!isTimerRunning && attempts === 0 && flippedCards.length === 0) {
+            setIsTimerRunning(true);
+        }
 
         // Don't allow more than 2 cards to be flipped at once
         if (flippedCards.length >= 2) return;
@@ -99,7 +130,7 @@ export default function GameBoard() {
                     setFlippedCards([]);
 
                     if (nextCards.every(c => c.isMatched)) {
-                        setGameIsFinished(true);
+                        setIsGameFinished(true);
                     }
                 });
 
@@ -119,9 +150,37 @@ export default function GameBoard() {
         };
     };
 
-    if (isLoading) return <h2 className='text-3xl text-center mt-4'>Loading cards...</h2>;
+    if (isLoading) {
+        // Skapa 16 skeleton cards
+        const skeletonCards = Array.from({ length: 16 }, (_, index) => (
+            <div
+                key={`skeleton-${index}`}
+                className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-lg bg-gray-500 flex justify-center items-center"
+            >
+                <div className="w-6 h-6 border-2 border-gray-100 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        ));
+
+        return (
+            <div className="flex flex-col items-center lg:col-span-2">
+                <div data-cy="game-board" className="grid grid-cols-4 gap-4">
+                    {skeletonCards}
+                </div>
+                <div className="flex flex-row flex-wrap gap-4 justify-center items-center mt-4">
+                    <div className="mt-4 text-lg font-medium">
+                        Attempts: <span data-cy="attempts" className="ml-2">0</span>
+                    </div>
+                    <div className="mt-4 text-lg font-medium">
+                        Time: <span data-cy="time" className="ml-2">00:00</span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
     if (isError) return <h2 className='text-3xl text-center mt-4'>Error loading game assets.</h2>;
     if (!assets || assets.length === 0) return <h2 className='text-3xl text-center mt-4'>No assets available.</h2>;
+
+    const categoryId = assets[0]?.categoryId || '';
 
     return (
         <div className="flex flex-col items-center lg:col-span-2">
@@ -134,17 +193,25 @@ export default function GameBoard() {
                         imageUrl={card.imageUrl}
                         isFlipped={card.isFlipped}
                         isMatched={card.isMatched}
-                        onClick={() => handleCardClick(card.id)} // Connect click-event
+                        onClick={() => handleCardClick(card.id)}
                     />
                 ))}
             </div>
-            <div className="mt-4 text-lg font-medium text-gray-700">
-                Attempts: <span data-cy="attempts" className="ml-2">{attempts}</span>
+            <div className="flex flex-row flex-wrap gap-4 justify-center items-center mt-4">
+                <div className="mt-4 text-lg font-medium">
+                    Attempts: <span data-cy="attempts" className="ml-2">{attempts}</span>
+                </div>
+                <div className="mt-4 text-lg font-medium self-end">
+                    Time: <span data-cy="time" className="ml-2">{formatTime(time)}</span>
+                </div>
             </div>
             <GameResultModal
-                isOpen={gameIsFinished}
-                onClose={() => setGameIsFinished(false)}
+                isOpen={isGameFinished}
+                onClose={() => setIsGameFinished(false)}
                 dataCy={'win-modal'}
+                categoryId={categoryId}
+                attempts={attempts}
+                time={time}
             />
         </div>
     );
