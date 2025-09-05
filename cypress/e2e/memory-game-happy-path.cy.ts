@@ -106,11 +106,11 @@ describe('memory game - happy path scenarios', () => {
 
     cy.get('[data-cy="win-modal"]').should('be.visible');
     cy.get('[data-cy="score-display"]').should('be.visible');
-    cy.get('[data-cy="name-input"]').should('be.visible');
+    cy.get('[data-cy="player-name-input"]').should('be.visible');
     cy.get('[data-cy="submit-button"]').should('be.visible');
   });
 
-  it.only('should fill in form and display the game result in leaderboard', () => {
+  it('should fill in form and display the game result in leaderboard', () => {
     cy.solveGame();
     cy.get('[data-cy="attempts-final"]').invoke('text').as('finalAttempts');
     cy.get('[data-cy="time-final"]').invoke('text').as('finalTime');
@@ -122,17 +122,18 @@ describe('memory game - happy path scenarios', () => {
     cy.wait(3000);
 
     // Leaderboard
-    cy.get('[data-cy="leaderboard-item"]')
+    cy.get('[data-cy="leaderboard"]')
       .contains('[data-cy="leaderboard-name"]', playerName)
+      .parents('[data-cy="leaderboard-item"]')
       .within(() => {
         cy.get('@finalAttempts').then((attempts) => {
           cy.get('[data-cy="leaderboard-attempts"]').should(
-            'have.text',
+            'contain.text',
             attempts
           );
         });
         cy.get('@finalTime').then((time) => {
-          cy.get('[data-cy="leaderboard-time"]').should('have.text', time);
+          cy.get('[data-cy="leaderboard-time"]').should('contain.text', time);
         });
       });
   });

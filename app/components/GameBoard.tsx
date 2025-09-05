@@ -1,7 +1,7 @@
 'use client';
 import type { Asset } from '@/generated/prisma';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Card from './Card';
 import GameResultModal from './GameResultModal';
 interface GameCard {
@@ -9,6 +9,10 @@ interface GameCard {
     imageUrl: string;
     isFlipped: boolean;
     isMatched: boolean;
+}
+
+interface GameBoardProps {
+    onNewGame: number;
 }
 
 const shuffleArray = (array: Asset[]): Asset[] => {
@@ -41,7 +45,7 @@ const formatTime = (totalSeconds: number): string => {
     return `${formattedMinutes}:${formattedSeconds}`;
 };
 
-export default function GameBoard() {
+export default function GameBoard({ onNewGame }: GameBoardProps) {
     const { data: assets, isLoading, isError } = useQuery({
         queryKey: ['gameAssets'],
         queryFn: getAssets,
@@ -56,20 +60,42 @@ export default function GameBoard() {
     const [isTimerRunning, setIsTimerRunning] = useState(false);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-    useEffect(() => {
-        if (assets && assets.length > 0) {
-            const selectedAssets = shuffleArray(assets).slice(0, 8);
-            const gameCards: GameCard[] = shuffleArray([...selectedAssets, ...selectedAssets]).map((asset, index) => ({
-                id: index,
-                imageUrl: asset.imageUrl,
-                isFlipped: false,
-                isMatched: false,
-            }));
-            setCards(gameCards);
+    const resetGame = useCallback(() => {
+        if (!assets || assets.length === 0) return;
+
+        const selectedAssets = shuffleArray(assets).slice(0, 8);
+        const gameCards: GameCard[] = shuffleArray([...selectedAssets, ...selectedAssets]).map((asset, index) => ({
+            id: index,
+            imageUrl: asset.imageUrl,
+            isFlipped: false,
+            isMatched: false,
+        }));
+
+        setCards(gameCards);
+        setAttempts(0);
+        setFlippedCards([]);
+        setIsGameFinished(false);
+        setTime(0);
+        setIsTimerRunning(false);
+
+        if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
         }
     }, [assets]);
 
-    // Effect ti manage timer
+    useEffect(() => {
+        if (assets && assets.length > 0) {
+            resetGame();
+        }
+    }, [assets, resetGame]);
+
+    useEffect(() => {
+        if (onNewGame > 0) {
+            resetGame();
+        }
+    }, [onNewGame, resetGame]);
+
     useEffect(() => {
         if (isTimerRunning) {
             timerRef.current = setInterval(() => {
@@ -88,6 +114,7 @@ export default function GameBoard() {
             }
         };
     }, [isTimerRunning, isGameFinished]);
+
 
     const handleCardClick = (cardId: number) => {
         // Don't allow clicking if card is already flipped or matched

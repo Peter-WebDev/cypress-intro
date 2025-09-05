@@ -19,6 +19,17 @@ describe('memory game - unhappy path scenarios', () => {
   });
 
   // should not allow flipping more than two cards
+  it('should not allow flipping more than two cards', () => {
+    cy.get('[data-cy="card-0"]')
+      .click()
+      .should('have.attr', 'data-flipped', 'true');
+    cy.get('[data-cy="card-1"]')
+      .click()
+      .should('have.attr', 'data-flipped', 'true');
+    cy.get('[data-cy="card-2"]')
+      .click()
+      .should('have.attr', 'data-flipped', 'false');
+  });
 
   it('should flip non-matching cards back after delay', () => {
     cy.get('[data-cy="card-0"]').click();
@@ -47,30 +58,10 @@ describe('memory game - unhappy path scenarios', () => {
   });
 
   // should not allow submitting a score with an empty name
-
-  // should show an error message for an invalid name input
-
-  it('should show the win screen when all pairs are matched', () => {
-    cy.get('[data-cy="card-0"]').click();
-    cy.get('[data-cy="card-2"]').click();
-    cy.get('[data-cy="card-1"]').click();
-    cy.get('[data-cy="card-11"]').click();
-    cy.get('[data-cy="card-3"]').click();
-    cy.get('[data-cy="card-10"]').click();
-    cy.get('[data-cy="card-4"]').click();
-    cy.get('[data-cy="card-15"]').click();
-    cy.get('[data-cy="card-5"]').click();
-    cy.get('[data-cy="card-6"]').click();
-    cy.get('[data-cy="card-7"]').click();
-    cy.get('[data-cy="card-8"]').click();
-    cy.get('[data-cy="card-9"]').click();
-    cy.get('[data-cy="card-12"]').click();
-    cy.get('[data-cy="card-13"]').click();
-    cy.get('[data-cy="card-14"]').click();
-
+  it('should not allow submitting a score with an empty name', () => {
+    cy.solveGame();
+    cy.get('[data-cy="player-name-input"]').clear();
+    cy.get('[data-cy="submit-button"]').click();
     cy.get('[data-cy="win-modal"]').should('be.visible');
-    cy.get('[data-cy="score-display"]').should('be.visible');
-    cy.get('[data-cy="name-input"]').should('be.visible');
-    cy.get('[data-cy="submit-button"]').should('be.visible');
   });
 });

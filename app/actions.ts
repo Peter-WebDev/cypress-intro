@@ -1,9 +1,8 @@
 'use server';
+import type { Prisma } from '@/generated/prisma';
 import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-
-import type { Prisma } from '@/generated/prisma';
 
 export type GameResultWithCategory = Prisma.GameResultGetPayload<{
   include: { category: true };
@@ -15,7 +14,7 @@ const gameResultSchema = z.object({
   }),
   time: z.coerce.number().int().positive(),
   attempts: z.coerce.number().int().positive(),
-  categoryId: z.string().min(1),
+  categoryId: z.string(),
 });
 
 export async function addGameResult(formData: FormData) {
@@ -61,10 +60,7 @@ export async function addGameResult(formData: FormData) {
 export async function getTopGameResults(): Promise<GameResultWithCategory[]> {
   const topResults = await db.gameResult.findMany({
     // Add parameters
-    orderBy: {
-      attempts: 'asc',
-      time: 'asc',
-    },
+    orderBy: [{ attempts: 'asc' }, { time: 'asc' }],
     take: 10,
     include: {
       category: true,
