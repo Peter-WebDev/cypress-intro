@@ -35,3 +35,52 @@
 //     }
 //   }
 // }
+
+Cypress.Commands.add('shuffle', (predictableSequence: number[]) => {
+  Cypress.on('window:before:load', (win) => {
+    let callIndex = 0;
+
+    cy.stub(win.Math, 'random').callsFake(() => {
+      const value = predictableSequence[callIndex % predictableSequence.length];
+      callIndex++;
+      return value;
+    });
+  });
+});
+
+Cypress.Commands.add('solveGame', () => {
+  const pairs = {
+    'card-0': 'card-2',
+    'card-1': 'card-11',
+    'card-3': 'card-10',
+    'card-4': 'card-15',
+    'card-5': 'card-6',
+    'card-7': 'card-8',
+    'card-9': 'card-12',
+    'card-13': 'card-14',
+  };
+
+  // Iterera över objekten och klicka på varje par
+  for (const [firstCard, secondCard] of Object.entries(pairs)) {
+    cy.get(`[data-cy="${firstCard}"]`).click();
+    cy.get(`[data-cy="${secondCard}"]`).click();
+  }
+});
+
+/* Cypress.Commands.add('mockAddGameResult', () => {
+  cy.window().then((win: any) => {
+    // Mocka addGameResult funktionen
+    win.addGameResult = cy
+      .stub()
+      .resolves({ success: true })
+      .as('mockAddGameResult');
+  });
+}); */
+
+/* Cypress.Commands.add('mockAddGameResult', () => {
+  cy.window().then((win: Window) => {
+    const mockStub = cy.stub().resolves({ success: true });
+    win.addGameResult = mockStub;
+    cy.wrap(mockStub).as('mockAddGameResult');
+  });
+}); */

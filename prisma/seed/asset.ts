@@ -1,18 +1,18 @@
 import { Asset, Category } from '@/generated/prisma';
-import { db } from '../db';
+import { db } from '@/lib/db';
 
 const categoryName = 'Animals';
 
 // Use the Asset type for type-safety
 const mockedAssets: Pick<Asset, 'imageUrl'>[] = [
-  { imageUrl: 'https://placehold.co/100x100/png?text=Cat' },
-  { imageUrl: 'https://placehold.co/100x100/png?text=Dog' },
-  { imageUrl: 'https://placehold.co/100x100/png?text=Bird' },
-  { imageUrl: 'https://placehold.co/100x100/png?text=Fish' },
-  { imageUrl: 'https://placehold.co/100x100/png?text=Rabbit' },
-  { imageUrl: 'https://placehold.co/100x100/png?text=Horse' },
-  { imageUrl: 'https://placehold.co/100x100/png?text=Cow' },
-  { imageUrl: 'https://placehold.co/100x100/png?text=Pig' },
+  { imageUrl: 'https://picsum.photos/id/244/100.webp' },
+  { imageUrl: 'https://picsum.photos/id/433/100.webp' },
+  { imageUrl: 'https://picsum.photos/id/219/100.webp' },
+  { imageUrl: 'https://picsum.photos/id/237/100.webp' },
+  { imageUrl: 'https://picsum.photos/id/582/100.webp' },
+  { imageUrl: 'https://picsum.photos/id/577/100.webp' },
+  { imageUrl: 'https://picsum.photos/id/593/100.webp' },
+  { imageUrl: 'https://picsum.photos/id/40/100.webp' },
 ];
 
 export async function seedAssets() {

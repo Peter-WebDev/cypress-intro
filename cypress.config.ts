@@ -6,6 +6,9 @@ import waitOn from 'wait-on';
 export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:3100',
+    env: {
+      DISABLE_SHUFFLE: true,
+    },
     async setupNodeEvents(on) {
       // 1. Skapa en in-memory databas (replica set prisma gnäller annars)
       const mongo = await MongoMemoryReplSet.create({
@@ -46,7 +49,7 @@ export default defineConfig({
       process.env.DATABASE_URL = dbUri;
       on('task', {
         async reseed() {
-          const { db } = await import('./prisma/db');
+          const { db } = await import('./lib/db');
           const { seedAssets } = await import('./prisma/seed/asset');
           await db.asset.deleteMany();
           await seedAssets();

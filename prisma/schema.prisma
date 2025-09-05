@@ -22,6 +22,8 @@ model GameResult {
   createdAt  DateTime @default(now())
   categoryId String   @db.ObjectId
   category   Category @relation(fields: [categoryId], references: [id])
+
+  @@map("gameResults")
 }
 
 model Category {
